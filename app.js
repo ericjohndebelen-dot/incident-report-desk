@@ -19,6 +19,10 @@
   const reportList = $('#reportList');
   const dialog = $('#reportDialog');
   const form = $('#reportForm');
+  const connectDialog = $('#connectDialog');
+  const connectForm = $('#connectForm');
+  const dashboardKeyInput = $('#dashboardKey');
+  const connectError = $('#connectError');
   const toast = $('#toast');
   let reports = loadReports();
   let activeTicketId = null;
@@ -169,21 +173,17 @@
     }
   }
 
-  async function refreshRemoteReports(promptForKey = true, syncLocalReports = false) {
+  async function refreshRemoteReports(syncLocalReports = false) {
     if (!window.IncidentSync?.isConfigured()) {
       setConnectionStatus(false);
       showToast('Add the shared web app URL in config.js first.');
       return;
     }
     if (remoteRefreshActive) return;
-    let key = window.IncidentSync.getAdminKey();
-    if (!key && promptForKey) {
-      key = window.prompt('Enter the Incident Desk dashboard key from your Google Apps Script setup:')?.trim() || '';
-      if (!key) return;
-      window.IncidentSync.setAdminKey(key);
-    }
+    const key = window.IncidentSync.getAdminKey();
     if (!key) {
       setConnectionStatus(false);
+      showToast('Click Connect and enter the private dashboard key first.');
       return;
     }
     remoteRefreshActive = true;
@@ -220,6 +220,18 @@
       remoteRefreshActive = false;
       refreshButton.disabled = false;
     }
+  }
+
+  function openConnectionDialog(message = '') {
+    if (!window.IncidentSync?.isConfigured()) {
+      showToast('Shared report storage is not configured yet.');
+      return;
+    }
+    connectError.textContent = message;
+    connectError.hidden = !message;
+    dashboardKeyInput.value = '';
+    connectDialog.showModal();
+    dashboardKeyInput.focus();
   }
 
   function showToast(message) {
@@ -808,9 +820,9 @@
   renderDashboard();
   setConnectionStatus(Boolean(window.IncidentSync?.getAdminKey()) && window.IncidentSync?.isConfigured());
   if (window.IncidentSync?.getAdminKey() && window.IncidentSync?.isConfigured()) {
-    refreshRemoteReports(false, false);
+    refreshRemoteReports(false);
     window.setInterval(() => {
-      if (window.IncidentSync.getAdminKey()) refreshRemoteReports(false, false);
+      if (window.IncidentSync.getAdminKey()) refreshRemoteReports(false);
     }, 60000);
   }
 
@@ -962,11 +974,29 @@
       await navigator.clipboard.writeText(link);
       showToast('Public reporting link copied to clipboard.');
     } catch {
-      window.prompt('Copy this public reporting link:', link);
+      showToast(`Clipboard access is blocked. Copy the reporter link from the address bar: ${link}`);
     }
   });
-  $('#connectSyncButton').addEventListener('click', () => refreshRemoteReports(true, true));
-  $('#refreshRemoteButton').addEventListener('click', () => refreshRemoteReports(true, false));
+  $('#connectSyncButton').addEventListener('click', () => {
+    if (window.IncidentSync?.getAdminKey()) refreshRemoteReports(true);
+    else openConnectionDialog();
+  });
+  $('#closeConnectDialog').addEventListener('click', () => connectDialog.close());
+  $('#cancelConnect').addEventListener('click', () => connectDialog.close());
+  connectForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    const key = dashboardKeyInput.value.trim();
+    if (!key) {
+      connectError.textContent = 'Enter the dashboard connection key.';
+      connectError.hidden = false;
+      dashboardKeyInput.focus();
+      return;
+    }
+    window.IncidentSync.setAdminKey(key);
+    connectDialog.close();
+    await refreshRemoteReports(true);
+  });
+  $('#refreshRemoteButton').addEventListener('click', () => refreshRemoteReports(false));
   window.addEventListener('storage', event => {
     if (event.key !== STORAGE_KEY) return;
     reports = loadReports();

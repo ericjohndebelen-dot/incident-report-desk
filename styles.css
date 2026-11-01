@@ -165,6 +165,8 @@ h1 { margin: 7px 0 5px; font: 800 27px/1.2 'Segoe UI Variable', 'Segoe UI', syst
 .report-dialog { width: min(640px, calc(100% - 28px)); max-height: min(90vh, 850px); padding: 0; overflow: auto; border: 1px solid #dfe7e6; border-radius: 15px; color: var(--ink); background: #fff; box-shadow: 0 22px 75px #142b3b38; }
 .report-dialog::backdrop { background: #1c3040a6; backdrop-filter: blur(3px); }
 .report-dialog form { padding: 23px 25px 20px; }
+.connection-dialog { width: min(460px, calc(100% - 28px)); }
+.connection-help { margin: -4px 0 18px; color: var(--muted); font-size: 12px; line-height: 1.65; }
 .dialog-head { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 19px; }
 .dialog-head h2 { margin: 6px 0 4px; font: 800 19px 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif; letter-spacing: -.55px; }
 .dialog-head p { margin: 0; color: var(--muted); font-size: 11px; }
@@ -184,7 +186,7 @@ h1 { margin: 7px 0 5px; font: 800 27px/1.2 'Segoe UI Variable', 'Segoe UI', syst
 .hidden { display: none !important; }
 .form-error { margin-top: 12px; padding: 9px 11px; border-radius: 7px; color: #a33740; background: #fff0f0; font-size: 10px; }
 .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; padding-top: 15px; border-top: 1px solid #edf0f0; }
-.toast { position: fixed; right: 22px; bottom: 20px; z-index: 10; max-width: min(400px, calc(100vw - 40px)); padding: 11px 15px; border: 1px solid #d6e6e1; border-radius: 9px; color: #285a4f; background: #fff; box-shadow: 0 8px 26px #18354a20; font-size: 11px; opacity: 0; pointer-events: none; transform: translateY(8px); transition: .2s ease; }
+.toast { position: fixed; right: 22px; bottom: 20px; z-index: 10; max-width: min(400px, calc(100vw - 40px)); padding: 11px 15px; border: 1px solid #d6e6e1; border-radius: 9px; color: #285a4f; background: #fff; box-shadow: 0 8px 26px #18354a20; font-size: 11px; overflow-wrap: anywhere; opacity: 0; pointer-events: none; transform: translateY(8px); transition: .2s ease; }
 .toast.visible { opacity: 1; transform: translateY(0); }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
