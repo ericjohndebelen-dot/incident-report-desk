@@ -433,6 +433,7 @@
     if (report.location) meta.append(createMeta('M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z M12 10h.01', report.location));
     if (report.personId) meta.append(createMeta('M20 21a8 8 0 0 0-16 0m8-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z', report.personId));
     if (report.lostTime) meta.append(createMeta('M12 7v5l3 2m5-2a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z', `Lost time: ${report.lostTime}`));
+    if (report.assignedTo) meta.append(createMeta('M16 21v-2a4 4 0 0 0-8 0v2m4-10a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm6 10v-2a4 4 0 0 0-3-3.87', `Handled by IT: ${report.assignedTo}`));
     main.append(topline, title, meta);
     if (report.photos.length) {
       const thumbnails = document.createElement('div');
@@ -508,6 +509,7 @@
     addTicketDetail(details, 'ID number', report.personId);
     addTicketDetail(details, 'Game ID', report.gameId);
     addTicketDetail(details, 'IT ID', report.itId);
+    addTicketDetail(details, 'Handled by (IT)', report.assignedTo);
     addTicketDetail(details, 'Incident description', report.description, true);
     addTicketDetail(details, 'Settlement / action taken', report.settlement, true);
 
@@ -571,7 +573,13 @@
       incident.textContent = reportTitle(report);
       const category = document.createElement('span');
       category.className = 'ticket-category';
-      category.textContent = `${report.department || 'No department'} · ${report.category} · ${report.severity}`;
+      const categorySummary = document.createElement('span');
+      categorySummary.className = 'ticket-category-summary';
+      categorySummary.textContent = `${report.department || 'No department'} · ${report.category} · ${report.severity}`;
+      const handler = document.createElement('span');
+      handler.className = 'ticket-handler';
+      handler.textContent = report.assignedTo ? `Handled by IT: ${report.assignedTo}` : 'IT handler not assigned';
+      category.append(categorySummary, handler);
       const ticketStatus = document.createElement('span');
       ticketStatus.className = `status-badge ${statusClass(report.status)}`;
       ticketStatus.textContent = STATUS_LABELS[report.status];
@@ -592,7 +600,7 @@
     if (status && report.status !== status) return false;
     if (severity && report.severity !== severity) return false;
     if (!query) return true;
-    return [report.department, report.category, report.incidentDate, report.location, report.personId, report.gameId, report.description, report.settlement, report.itId, report.status, report.severity]
+    return [report.department, report.category, report.incidentDate, report.location, report.personId, report.gameId, report.description, report.settlement, report.itId, report.assignedTo, report.status, report.severity]
       .some(value => String(value || '').toLocaleLowerCase().includes(query));
   }
 
@@ -688,7 +696,7 @@
     resetForm();
     $('#formTitle').textContent = 'Edit report';
     $('#editingId').value = report.id;
-    for (const key of ['category', 'department', 'incidentDate', 'startTime', 'endTime', 'lostTime', 'location', 'personId', 'gameId', 'description', 'settlement', 'itId', 'status', 'severity']) {
+    for (const key of ['category', 'department', 'incidentDate', 'startTime', 'endTime', 'lostTime', 'location', 'personId', 'gameId', 'description', 'settlement', 'itId', 'status', 'severity', 'assignedTo']) {
       $(`#${key}`).value = report[key] || (key === 'status' ? 'New' : '');
     }
     currentPhotos = report.photos.map(photo => ({ ...photo }));
@@ -717,7 +725,7 @@
       itId: $('#itId').value,
       status: $('#status').value,
       severity: $('#severity').value,
-      assignedTo: existing?.assignedTo || '',
+      assignedTo: $('#assignedTo').value.trim().slice(0, 100),
       ticketNotes: existing?.ticketNotes || '',
       photos: currentPhotos,
       createdAt: existing?.createdAt || new Date().toISOString(),
@@ -751,7 +759,7 @@
     const columns = [
       ['Ticket ID', 'ticketId'], ['Incident Date', 'incidentDate'], ['ID Number', 'personId'], ['Department', 'department'], ['Incident Type', 'category'], ['Urgency', 'severity'], ['Start Time', 'startTime'], ['End Time', 'endTime'],
       ['Lost Time', 'lostTime'], ['Location / Table No.', 'location'], ['What are you reporting?', 'description'],
-      ['Settlement', 'settlement'], ['Game ID', 'gameId'], ['IT ID', 'itId'], ['Status', 'status'], ['Assigned To', 'assignedTo'], ['Ticket Notes', 'ticketNotes']
+      ['Settlement', 'settlement'], ['Game ID', 'gameId'], ['IT ID', 'itId'], ['Status / progress', 'status'], ['Handled by (IT)', 'assignedTo'], ['Ticket Notes', 'ticketNotes']
     ];
     const rows = [columns.map(([label]) => csvCell(label)).join(',')];
     for (const report of reports) rows.push(columns.map(([, key]) => csvCell(report[key])).join(','));

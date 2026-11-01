@@ -2,7 +2,7 @@ const REPORT_SHEET_NAME = 'Reports';
 const REPORT_HEADERS = [
   'Record ID', 'Ticket ID', 'Date', 'ID Number', 'Department', 'What Are You Reporting?', 'Urgency', 'Incident Type',
   'Start Time', 'End Time', 'Lost Time', 'Location / Table No.', 'Settlement / Action Taken', 'Game ID', 'IT ID',
-  'Status', 'Assigned To', 'Ticket Notes', 'Photos', 'Created At', 'Updated At', 'Record JSON'
+  'Status', 'Handled By (IT)', 'Ticket Notes', 'Photos', 'Created At', 'Updated At', 'Record JSON'
 ];
 const REPORT_CATEGORIES = ['Studio Incident', 'Card Room Incident', 'Training Room Incident', 'Office Incident', 'Maintenance Records', 'CCTV Records'];
 const REPORT_DEPARTMENTS = ['CCTV', 'HR', 'ADMIN', 'STUDIO', 'CARD'];

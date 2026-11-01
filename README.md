@@ -8,7 +8,7 @@ A polished, free incident-report and ticket dashboard. The public form is a sepa
 - Date, ID number, department (CCTV, HR, ADMIN, STUDIO, CARD), urgency (Low, Medium, High, Critical), and incident description.
 - Optional incident times, location/table number, lost time, settlement/action, Game ID, IT ID, and up to three pasted or uploaded photos.
 - Search and filters for incident type, status, and urgency.
-- Ticket details, assignment, notes, and statuses: New, Ongoing, In Progress, Resolved, and Closed.
+- Ticket details, IT handler, notes, and statuses: New, Ongoing, In Progress, Resolved, and Closed.
 - CSV export and JSON backup/import.
 - No delete controls in the dashboard.
 - Responsive English interface.

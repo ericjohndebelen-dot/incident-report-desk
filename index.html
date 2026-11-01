@@ -163,7 +163,8 @@
           <label class="form-field" for="category"><span>Incident type <i>*</i></span><select id="category" name="category" required></select><small>From the Book1 incident template.</small></label>
           <label class="form-field" for="department"><span>Department</span><select id="department" name="department"><option value="">Select a department</option><option value="CCTV">CCTV</option><option value="HR">HR</option><option value="ADMIN">ADMIN</option><option value="STUDIO">STUDIO</option><option value="CARD">CARD</option></select></label>
           <label class="form-field" for="incidentDate"><span>Incident date <i>*</i></span><input id="incidentDate" name="incidentDate" type="date" required /></label>
-          <label class="form-field" for="status"><span>Status</span><select id="status" name="status"><option value="New">New</option><option value="Ongoing">Ongoing</option><option value="In Progress">In Progress</option><option value="Resolved">Resolved</option><option value="Closed">Closed</option></select></label>
+          <label class="form-field" for="status"><span>Status / progress</span><select id="status" name="status"><option value="New">New</option><option value="Ongoing">Ongoing</option><option value="In Progress">In Progress</option><option value="Resolved">Resolved</option><option value="Closed">Closed</option></select></label>
+          <label class="form-field" for="assignedTo"><span>Handled by (IT)</span><input id="assignedTo" name="assignedTo" type="text" maxlength="100" placeholder="Name of IT staff member" /></label>
           <label class="form-field" for="severity"><span>Urgency</span><select id="severity" name="severity"><option value="Low">Low</option><option value="Medium" selected>Medium</option><option value="High">High</option><option value="Critical">Critical</option></select></label>
           <label class="form-field" for="startTime"><span>Start time</span><input id="startTime" name="startTime" type="time" /></label>
           <label class="form-field" for="endTime"><span>End time</span><input id="endTime" name="endTime" type="time" /></label>
@@ -199,8 +200,8 @@
         <div class="ticket-detail-grid" id="ticketDetails"></div>
         <div class="ticket-photo-gallery" id="ticketPhotoGallery"></div>
         <div class="ticket-edit-grid">
-          <label class="form-field" for="ticketDetailStatus"><span>Ticket status</span><select id="ticketDetailStatus"><option value="New">New</option><option value="Ongoing">Ongoing</option><option value="In Progress">In Progress</option><option value="Resolved">Resolved</option><option value="Closed">Closed</option></select></label>
-          <label class="form-field" for="ticketAssignee"><span>Assigned to</span><input id="ticketAssignee" type="text" maxlength="100" placeholder="Add an owner" /></label>
+          <label class="form-field" for="ticketDetailStatus"><span>Status / progress</span><select id="ticketDetailStatus"><option value="New">New</option><option value="Ongoing">Ongoing</option><option value="In Progress">In Progress</option><option value="Resolved">Resolved</option><option value="Closed">Closed</option></select></label>
+          <label class="form-field" for="ticketAssignee"><span>Handled by (IT)</span><input id="ticketAssignee" type="text" maxlength="100" placeholder="Name of IT staff member" /></label>
           <label class="form-field field-full" for="ticketNotes"><span>Ticket notes / updates</span><textarea id="ticketNotes" rows="3" maxlength="2000" placeholder="Add follow-up notes or work updates"></textarea></label>
         </div>
         <div class="ticket-dialog-actions"><button class="button button-quiet" id="editSourceIncident" type="button">Edit incident details</button><button class="button button-primary" id="saveTicket" type="button">Save ticket updates</button></div>

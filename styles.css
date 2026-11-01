@@ -294,7 +294,9 @@ button:focus-visible, a:focus-visible, [role="button"]:focus-visible, input:focu
 .ticket-row:hover { transform: translateY(-1px); border-color: #cfe2db; box-shadow: 0 6px 17px #18394b0a; }
 .ticket-number { color: #167b6e; font-size: 10px; font-weight: 800; white-space: nowrap; }
 .ticket-incident { overflow: hidden; color: #253f4f; font-size: 10px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
-.ticket-category { overflow: hidden; color: #71848b; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.ticket-category { display: grid; min-width: 0; gap: 4px; overflow: hidden; color: #71848b; font-size: 9px; }
+.ticket-category-summary, .ticket-handler { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ticket-handler { color: #52786f; font-size: 8px; font-weight: 700; }
 .ticket-row .status-badge { justify-self: start; }
 .ticket-created { color: #87969c; font-size: 9px; white-space: nowrap; }
 .ticket-row.ticket-critical { border-left: 3px solid #c35660; }
