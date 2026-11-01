@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f5f7f6" />
+    <meta name="description" content="Submit an incident report to Incident Desk." />
+    <title>Report an Incident | Incident Desk</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="config.js"></script>
+    <script src="sync.js" defer></script>
+    <script src="report.js" defer></script>
+  </head>
+  <body class="public-report-page">
+    <header class="public-header">
+      <a class="brand" href="index.html" aria-label="Incident Desk">
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3.25 19 6v5.35c0 4.35-2.86 7.7-7 9.4-4.14-1.7-7-5.05-7-9.4V6l7-2.75Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M12 8v5m0 3h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+        <span><strong>Incident Desk</strong><small>Incident reporting</small></span>
+      </a>
+      <span class="public-header-note"><span class="online-dot"></span> Free incident report form</span>
+    </header>
+
+    <main class="public-report-shell">
+      <section class="public-intro">
+        <div class="eyebrow">INCIDENT REPORTING</div>
+        <h1>Report an incident</h1>
+        <p>Complete the form below. A ticket number will be created when you submit the report.</p>
+      </section>
+
+      <div class="public-storage-note" id="publicStorageNote" role="note">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5 20 7v5.2c0 4-3.1 7.3-8 9.3-4.9-2-8-5.3-8-9.3V7l8-3.5Z"/><path d="M12 8v4m0 3h.01"/></svg>
+        <span><strong id="storageNoteTitle">Browser-only storage:</strong> <span id="storageNoteText">This form saves to the browser and device used to submit. Configure the shared connection so reports from any device enter the Incident Desk dashboard.</span></span>
+      </div>
+
+      <form class="public-form" id="publicReportForm" novalidate>
+        <div class="public-form-heading"><div><h2>Incident report</h2><p>Fields marked with * are required.</p></div><span class="required-key"><i>*</i> Required</span></div>
+        <div class="form-grid public-core-fields">
+          <label class="form-field" for="publicDate"><span>Date <i>*</i></span><input id="publicDate" type="date" required /></label>
+          <label class="form-field" for="publicPersonId"><span>ID number <i>*</i></span><input id="publicPersonId" type="text" maxlength="80" required /></label>
+          <label class="form-field" for="publicDepartment"><span>Department <i>*</i></span><select id="publicDepartment" required>
+            <option value="CCTV">CCTV</option><option value="HR">HR</option><option value="ADMIN">ADMIN</option><option value="STUDIO">STUDIO</option><option value="CARD">CARD</option>
+          </select></label>
+          <label class="form-field" for="publicSeverity"><span>Urgency <i>*</i></span><select id="publicSeverity" required><option>Low</option><option selected>Medium</option><option>High</option><option>Critical</option></select></label>
+          <label class="form-field field-full" for="publicDescription"><span>What are you reporting? <i>*</i></span><textarea id="publicDescription" rows="5" maxlength="3000" required placeholder="Describe what happened and where it happened."></textarea></label>
+        </div>
+        <details class="more-details">
+          <summary>Additional details and photos <span>Optional</span></summary>
+          <div class="form-grid additional-fields">
+            <label class="form-field" for="publicStart"><span>Start time</span><input id="publicStart" type="time" /></label>
+            <label class="form-field" for="publicEnd"><span>End time</span><input id="publicEnd" type="time" /></label>
+            <label class="form-field" for="publicLost"><span>Lost time</span><input id="publicLost" type="text" maxlength="60" placeholder="e.g. 15 min, 00:15" /><small>Use the unit your team records.</small></label>
+            <label class="form-field" for="publicLocation"><span id="publicLocationLabel">Location</span><input id="publicLocation" type="text" maxlength="120" placeholder="Location or table number" /></label>
+            <label class="form-field field-full hidden" id="publicGameIdField" for="publicGameId"><span>Game ID</span><input id="publicGameId" type="text" maxlength="80" /></label>
+            <div class="form-field field-full photo-field">
+              <span>Incident photos</span>
+              <div class="upload-box" id="publicPhotoDropzone">
+                <span class="upload-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5h11A2.5 2.5 0 0 1 20 7.5v9a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5v-9Z"/><circle cx="9" cy="9" r="1.5"/><path d="m5 17 5-5 3 3 2-2 4 4"/></svg></span>
+                <span class="upload-copy"><strong>Attach photos</strong><small>Choose files, drag them here, or paste an image</small></span>
+                <button class="button button-outline upload-button" id="publicChoosePhotos" type="button">Browse files</button>
+                <input id="publicPhotoInput" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden />
+              </div>
+              <small>Up to 3 photos. Images are resized before saving.</small>
+              <div class="photo-previews" id="publicPhotoPreviews"></div>
+            </div>
+            <label class="form-field field-full" for="publicSettlement"><span>Settlement / action taken</span><textarea id="publicSettlement" rows="2" maxlength="1500" placeholder="Resolution, follow-up, or settlement details"></textarea></label>
+            <label class="form-field field-full" for="publicItId"><span>IT ID</span><input id="publicItId" type="text" maxlength="80" placeholder="Optional" /></label>
+          </div>
+        </details>
+        <div class="form-error" id="publicFormError" role="alert" hidden></div>
+        <div class="public-submit-row"><p>Your report will be saved as a new ticket.</p><button class="button button-primary" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Submit incident</button></div>
+      </form>
+
+      <section class="public-success" id="publicSuccess" hidden aria-live="polite">
+        <div class="success-check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></div>
+        <div class="eyebrow">REPORT SUBMITTED</div>
+        <h2>Your incident ticket is ready</h2>
+        <p id="successDetail">Save this number so you can refer to the report.</p>
+        <strong class="success-ticket-number" id="successTicketNumber"></strong>
+        <button class="button button-primary" id="reportAnother" type="button">Submit another report</button>
+      </section>
+      <footer class="public-footer">Incident Desk <span>·</span> Free incident reporting</footer>
+    </main>
+    <div class="toast" id="publicToast" role="status" aria-live="polite"></div>
+  </body>
+</html>
