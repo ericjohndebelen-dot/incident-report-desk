@@ -2,10 +2,11 @@ const REPORT_SHEET_NAME = 'Reports';
 const REPORT_HEADERS = [
   'Record ID', 'Ticket ID', 'Date', 'ID Number', 'Department', 'What Are You Reporting?', 'Urgency', 'Incident Type',
   'Start Time', 'End Time', 'Lost Time', 'Location / Table No.', 'Settlement / Action Taken', 'Game ID', 'IT ID',
-  'Status', 'Handled By (IT)', 'Ticket Notes', 'Photos', 'Created At', 'Updated At', 'Record JSON'
+  'Status', 'Assigned Team', 'Handled By', 'Ticket Notes', 'Photos', 'Created At', 'Updated At', 'Record JSON'
 ];
 const REPORT_CATEGORIES = ['Studio Incident', 'Card Room Incident', 'Training Room Incident', 'Office Incident', 'Maintenance Records', 'CCTV Records'];
-const REPORT_DEPARTMENTS = ['CCTV', 'HR', 'ADMIN', 'STUDIO', 'CARD'];
+const REPORT_DEPARTMENTS = ['CCTV', 'HR', 'ADMIN', 'STUDIO', 'CARD', 'MAINTENANCE'];
+const ASSIGNED_TEAMS = ['IT', 'Maintenance'];
 const REPORT_URGENCIES = ['Low', 'Medium', 'High', 'Critical'];
 const REPORT_STATUSES = ['New', 'Ongoing', 'In Progress', 'Resolved', 'Closed'];
 
@@ -148,7 +149,7 @@ function upsertAdminReport(input) {
 function normalizeIncident(value, isPublic) {
   if (!value || typeof value !== 'object') throw new Error('The report details are invalid.');
   const department = REPORT_DEPARTMENTS.includes(value.department) ? value.department : '';
-  const categoryByDepartment = { CCTV: 'CCTV Records', HR: 'Office Incident', ADMIN: 'Office Incident', STUDIO: 'Studio Incident', CARD: 'Card Room Incident' };
+  const categoryByDepartment = { CCTV: 'CCTV Records', HR: 'Office Incident', ADMIN: 'Office Incident', STUDIO: 'Studio Incident', CARD: 'Card Room Incident', MAINTENANCE: 'Maintenance Records' };
   const category = REPORT_CATEGORIES.includes(value.category) ? value.category : categoryByDepartment[department];
   const date = String(value.incidentDate || '').slice(0, 10);
   const description = cleanText(value.description, 3000);
@@ -175,6 +176,7 @@ function normalizeIncident(value, isPublic) {
     itId: cleanText(value.itId, 80),
     status: REPORT_STATUSES.includes(value.status) ? value.status : 'New',
     severity: REPORT_URGENCIES.includes(value.severity) ? value.severity : 'Medium',
+    assignedTeam: category === 'Maintenance Records' && ASSIGNED_TEAMS.includes(value.assignedTeam) ? value.assignedTeam : '',
     assignedTo: isPublic ? '' : cleanText(value.assignedTo, 100),
     ticketNotes: isPublic ? '' : cleanText(value.ticketNotes, 2000),
     photos,
@@ -208,7 +210,7 @@ function reportToRow(report) {
   const values = [
     report.id, report.ticketId, report.incidentDate, report.personId, report.department, report.description, report.severity,
     report.category, report.startTime, report.endTime, report.lostTime, report.location, report.settlement, report.gameId,
-    report.itId, report.status, report.assignedTo, report.ticketNotes,
+    report.itId, report.status, report.assignedTeam, report.assignedTo, report.ticketNotes,
     (report.photos || []).map(photo => photo.driveFileId).filter(Boolean).join(', '), report.createdAt, report.updatedAt,
     JSON.stringify(report)
   ];
@@ -229,7 +231,8 @@ function readReports() {
 
 function parseStoredReport(row) {
   try {
-    const report = JSON.parse(String(row[21] || '{}'));
+    const jsonIndex = REPORT_HEADERS.indexOf('Record JSON');
+    const report = JSON.parse(String(row[jsonIndex] || '{}'));
     if (!report || !report.id) return null;
     return report;
   } catch (error) {
@@ -241,7 +244,29 @@ function reportSheet() {
   const spreadsheet = SpreadsheetApp.openById(requiredProperty('INCIDENT_SPREADSHEET_ID'));
   const sheet = spreadsheet.getSheetByName(REPORT_SHEET_NAME);
   if (!sheet) throw new Error('The Reports tab is missing. Run setupIncidentDesk again.');
+  ensureAssignedTeamColumn(sheet);
   return sheet;
+}
+
+function ensureAssignedTeamColumn(sheet) {
+  const lastColumn = Math.max(sheet.getLastColumn(), 1);
+  let headers = sheet.getRange(1, 1, 1, lastColumn).getValues()[0].map(value => String(value || '').trim());
+  if (!headers.includes('Assigned Team')) {
+    const jsonIndex = headers.indexOf('Record JSON');
+    const newColumn = jsonIndex >= 0 ? jsonIndex + 1 : lastColumn + 1;
+    if (jsonIndex >= 0) sheet.insertColumnBefore(newColumn);
+    else sheet.insertColumnAfter(lastColumn);
+    const headerCell = sheet.getRange(1, newColumn);
+    headerCell.setValue('Assigned Team').setFontWeight('bold').setBackground('#e8f2ee');
+    sheet.setColumnWidth(newColumn, 140);
+    headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0].map(value => String(value || '').trim());
+  }
+  const handlerIndex = headers.indexOf('Handled By (IT)');
+  if (handlerIndex >= 0) sheet.getRange(1, handlerIndex + 1).setValue('Handled By');
+  const teamIndex = headers.indexOf('Assigned Team');
+  if (teamIndex >= 0) sheet.showColumns(teamIndex + 1);
+  const jsonIndex = headers.indexOf('Record JSON');
+  if (jsonIndex >= 0) sheet.hideColumns(jsonIndex + 1);
 }
 
 function requiredProperty(name) {

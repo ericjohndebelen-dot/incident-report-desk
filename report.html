@@ -6,10 +6,10 @@
     <meta name="theme-color" content="#f5f7f6" />
     <meta name="description" content="Submit an incident report to Incident Desk." />
     <title>Report an Incident | Incident Desk</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=20261101-3" />
     <script src="config.js?v=20261101-1"></script>
     <script src="sync.js?v=20261101-1" defer></script>
-    <script src="report.js?v=20261101-1" defer></script>
+    <script src="report.js?v=20261101-3" defer></script>
   </head>
   <body class="public-report-page">
     <header class="public-header">
@@ -38,8 +38,9 @@
           <label class="form-field" for="publicDate"><span>Date <i>*</i></span><input id="publicDate" type="date" required /></label>
           <label class="form-field" for="publicPersonId"><span>ID number <i>*</i></span><input id="publicPersonId" type="text" maxlength="80" required /></label>
           <label class="form-field" for="publicDepartment"><span>Department <i>*</i></span><select id="publicDepartment" required>
-            <option value="CCTV">CCTV</option><option value="HR">HR</option><option value="ADMIN">ADMIN</option><option value="STUDIO">STUDIO</option><option value="CARD">CARD</option>
+            <option value="CCTV">CCTV</option><option value="HR">HR</option><option value="ADMIN">ADMIN</option><option value="STUDIO">STUDIO</option><option value="CARD">CARD</option><option value="MAINTENANCE">Maintenance</option>
           </select></label>
+          <label class="form-field hidden" id="publicAssignedTeamField" for="publicAssignedTeam"><span>Assigned team <i>*</i></span><select id="publicAssignedTeam"><option value="">Choose IT or Maintenance</option><option value="IT">IT</option><option value="Maintenance">Maintenance</option></select><small>Choose which team should handle this maintenance report.</small></label>
           <label class="form-field" for="publicSeverity"><span>Urgency <i>*</i></span><select id="publicSeverity" required><option>Low</option><option selected>Medium</option><option>High</option><option>Critical</option></select></label>
           <label class="form-field field-full" for="publicDescription"><span>What are you reporting? <i>*</i></span><textarea id="publicDescription" rows="5" maxlength="3000" required placeholder="Describe what happened and where it happened."></textarea></label>
         </div>
@@ -67,7 +68,7 @@
           </div>
         </details>
         <div class="form-error" id="publicFormError" role="alert" hidden></div>
-        <div class="public-submit-row"><p>Your report starts as <strong>New</strong>. IT will update it to Ongoing, In Progress, Resolved, or Closed.</p><button class="button button-primary" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Submit incident</button></div>
+        <div class="public-submit-row"><p>Your report starts as <strong>New</strong>. The assigned team will update it to Ongoing, In Progress, Resolved, or Closed.</p><button class="button button-primary" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Submit incident</button></div>
       </form>
 
       <section class="public-success" id="publicSuccess" hidden aria-live="polite">

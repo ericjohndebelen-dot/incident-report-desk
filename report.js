@@ -54,7 +54,8 @@
       HR: 'Office Incident',
       ADMIN: 'Office Incident',
       STUDIO: 'Studio Incident',
-      CARD: 'Card Room Incident'
+      CARD: 'Card Room Incident',
+      MAINTENANCE: 'Maintenance Records'
     }[department] || 'Office Incident';
   }
 
@@ -63,6 +64,12 @@
     const isTableDepartment = ['STUDIO', 'CARD'].includes(department);
     $('#publicLocationLabel').textContent = isTableDepartment ? 'Table No.' : 'Location';
     $('#publicGameIdField').classList.toggle('hidden', department !== 'STUDIO');
+    const teamField = $('#publicAssignedTeamField');
+    const teamSelect = $('#publicAssignedTeam');
+    const needsTeam = department === 'MAINTENANCE';
+    teamField.classList.toggle('hidden', !needsTeam);
+    teamSelect.required = needsTeam;
+    if (!needsTeam) teamSelect.value = '';
   }
 
   function updateStorageNote() {
@@ -221,6 +228,12 @@
       invalid.focus();
       return;
     }
+    if ($('#publicDepartment').value === 'MAINTENANCE' && !$('#publicAssignedTeam').value) {
+      errorBox.textContent = 'Choose IT or Maintenance to handle this maintenance report.';
+      errorBox.hidden = false;
+      $('#publicAssignedTeam').focus();
+      return;
+    }
     if (pendingUploads > 0) {
       errorBox.textContent = 'Wait for photo uploads to finish before submitting.';
       errorBox.hidden = false;
@@ -245,6 +258,7 @@
         itId: $('#publicItId').value.trim(),
         status: 'New',
         severity: $('#publicSeverity').value,
+        assignedTeam: $('#publicDepartment').value === 'MAINTENANCE' ? $('#publicAssignedTeam').value : '',
         assignedTo: '',
         ticketNotes: '',
         photos: photos.slice(0, MAX_PHOTOS),
@@ -252,6 +266,7 @@
         updatedAt: now
       };
     }
+    if (pendingReport.category === 'Maintenance Records') pendingReport.assignedTeam = $('#publicAssignedTeam').value;
     const submitButton = form.querySelector('[type="submit"]');
     submitButton.disabled = true;
     submitButton.querySelector('svg')?.classList.add('sync-spin');

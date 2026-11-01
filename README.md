@@ -5,10 +5,11 @@ A polished, free incident-report and ticket dashboard. The public form is a sepa
 ## Included features
 
 - Separate shareable incident form and internal dashboard.
-- Date, ID number, department (CCTV, HR, ADMIN, STUDIO, CARD), urgency (Low, Medium, High, Critical), and incident description.
+- Date, ID number, department (CCTV, HR, ADMIN, STUDIO, CARD, MAINTENANCE), urgency (Low, Medium, High, Critical), and incident description.
+- Maintenance reports let the reporter select IT or Maintenance as the assigned team; the team is shown in the report and ticket and can be updated by IT.
 - Optional incident times, location/table number, lost time, settlement/action, Game ID, IT ID, and up to three pasted or uploaded photos.
 - Search and filters for incident type, status, and urgency.
-- Ticket details, IT handler, notes, and statuses: New, Ongoing, In Progress, Resolved, and Closed.
+- Ticket details, assigned team, handler, notes, and statuses: New, Ongoing, In Progress, Resolved, and Closed.
 - CSV export and JSON backup/import.
 - No delete controls in the dashboard.
 - Responsive English interface.
@@ -57,4 +58,4 @@ If `config.js` has no web app URL, the site still works, but reports are stored 
 
 ## Workbook fields
 
-The report form uses the date, ID number, department, incident description, urgency, and optional incident details. Department choices follow the requested CCTV, HR, ADMIN, STUDIO, and CARD list. The separate incident-type field preserves the workbook categories, while urgency and ticket status are tracked independently.
+The report form uses the date, ID number, department, incident description, urgency, and optional incident details. Department choices include the requested CCTV, HR, ADMIN, STUDIO, and CARD options plus Maintenance, which maps to the workbook's Maintenance Records category. Maintenance reports require an assigned team: IT or Maintenance. The separate incident-type field preserves the workbook categories, while urgency and ticket status are tracked independently.

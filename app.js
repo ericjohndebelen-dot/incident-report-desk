@@ -11,7 +11,8 @@
     'CCTV Records'
   ];
   const SEVERITIES = ['Low', 'Medium', 'High', 'Critical'];
-  const DEPARTMENTS = ['CCTV', 'HR', 'ADMIN', 'STUDIO', 'CARD'];
+  const DEPARTMENTS = ['CCTV', 'HR', 'ADMIN', 'STUDIO', 'CARD', 'MAINTENANCE'];
+  const ASSIGNED_TEAMS = ['IT', 'Maintenance'];
   const MAX_PHOTOS = 3;
   const MAX_PHOTO_DATA_URL_LENGTH = 850_000;
   const STATUS_LABELS = { New: 'New', Ongoing: 'Ongoing', 'In Progress': 'In Progress', Resolved: 'Resolved', Closed: 'Closed' };
@@ -96,6 +97,7 @@
       itId: String(value.itId || '').trim().slice(0, 80),
       status,
       severity,
+      assignedTeam: value.category === 'Maintenance Records' && ASSIGNED_TEAMS.includes(value.assignedTeam) ? value.assignedTeam : '',
       assignedTo: String(value.assignedTo || '').trim().slice(0, 100),
       ticketNotes: String(value.ticketNotes || '').trim().slice(0, 2000),
       photos: Array.isArray(value.photos) ? value.photos
@@ -367,6 +369,10 @@
     return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat('en-PH', { month: 'short', day: 'numeric', year: 'numeric' }).format(date);
   }
 
+  function displayDepartment(value) {
+    return value === 'MAINTENANCE' ? 'Maintenance' : value;
+  }
+
   function fillCategoryOptions() {
     const select = $('#category');
     const filter = $('#categoryFilter');
@@ -388,6 +394,12 @@
       : category === 'Office Incident' ? 'HR-ID (E-ID#)' : 'ID (E-ID#)';
     $('#descriptionLabel').innerHTML = `${['Studio Incident', 'Card Room Incident', 'Office Incident'].includes(category) ? 'Error description' : 'Incident description'} <i>*</i>`;
     $('#gameIdField').classList.toggle('hidden', category !== 'Studio Incident');
+    const assignedTeamField = $('#assignedTeamField');
+    const assignedTeamSelect = $('#assignedTeam');
+    const needsTeam = category === 'Maintenance Records';
+    assignedTeamField.classList.toggle('hidden', !needsTeam);
+    assignedTeamSelect.required = needsTeam;
+    if (!needsTeam) assignedTeamSelect.value = '';
   }
 
   function createMeta(icon, text) {
@@ -427,7 +439,7 @@
     const department = report.department ? document.createElement('span') : null;
     if (department) {
       department.className = 'department-badge';
-      department.textContent = report.department;
+      department.textContent = displayDepartment(report.department);
       topline.append(category, department, status, severity);
     } else {
       topline.append(category, status, severity);
@@ -445,7 +457,8 @@
     if (report.location) meta.append(createMeta('M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z M12 10h.01', report.location));
     if (report.personId) meta.append(createMeta('M20 21a8 8 0 0 0-16 0m8-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z', report.personId));
     if (report.lostTime) meta.append(createMeta('M12 7v5l3 2m5-2a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z', `Lost time: ${report.lostTime}`));
-    if (report.assignedTo) meta.append(createMeta('M16 21v-2a4 4 0 0 0-8 0v2m4-10a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm6 10v-2a4 4 0 0 0-3-3.87', `Handled by IT: ${report.assignedTo}`));
+    if (report.assignedTeam) meta.append(createMeta('M16 21v-2a4 4 0 0 0-8 0v2m4-10a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm6 10v-2a4 4 0 0 0-3-3.87', `Assigned team: ${report.assignedTeam}`));
+    if (report.assignedTo) meta.append(createMeta('M16 21v-2a4 4 0 0 0-8 0v2m4-10a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm6 10v-2a4 4 0 0 0-3-3.87', `Handled by: ${report.assignedTo}`));
     main.append(topline, title, meta);
     if (report.photos.length) {
       const thumbnails = document.createElement('div');
@@ -521,7 +534,8 @@
     addTicketDetail(details, 'ID number', report.personId);
     addTicketDetail(details, 'Game ID', report.gameId);
     addTicketDetail(details, 'IT ID', report.itId);
-    addTicketDetail(details, 'Handled by (IT)', report.assignedTo);
+    if (report.category === 'Maintenance Records') addTicketDetail(details, 'Assigned team', report.assignedTeam);
+    addTicketDetail(details, 'Handled by', report.assignedTo);
     addTicketDetail(details, 'Incident description', report.description, true);
     addTicketDetail(details, 'Settlement / action taken', report.settlement, true);
 
@@ -544,6 +558,12 @@
     $('#ticketDetailStatus').value = report.status;
     $('#ticketAssignee').value = report.assignedTo || '';
     $('#ticketNotes').value = report.ticketNotes || '';
+    const assignedTeamField = $('#ticketAssignedTeamField');
+    const assignedTeamSelect = $('#ticketAssignedTeam');
+    const needsTeam = report.category === 'Maintenance Records';
+    assignedTeamField.classList.toggle('hidden', !needsTeam);
+    assignedTeamSelect.required = needsTeam;
+    assignedTeamSelect.value = report.assignedTeam || '';
   }
 
   function openTicket(report) {
@@ -556,7 +576,7 @@
     const status = $('#ticketStatusFilter').value;
     const filtered = reports
       .filter(report => (!status || report.status === status))
-      .filter(report => !query || [report.ticketId, report.personId, report.department, report.category, report.severity, report.description, report.location, report.assignedTo, report.status]
+      .filter(report => !query || [report.ticketId, report.personId, report.department, report.category, report.severity, report.description, report.location, report.assignedTeam, report.assignedTo, report.status]
         .some(value => String(value || '').toLocaleLowerCase().includes(query)))
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     const list = $('#ticketList');
@@ -587,10 +607,12 @@
       category.className = 'ticket-category';
       const categorySummary = document.createElement('span');
       categorySummary.className = 'ticket-category-summary';
-      categorySummary.textContent = `${report.department || 'No department'} · ${report.category} · ${report.severity}`;
+      categorySummary.textContent = `${displayDepartment(report.department) || 'No department'} · ${report.category} · ${report.severity}`;
       const handler = document.createElement('span');
       handler.className = 'ticket-handler';
-      handler.textContent = report.assignedTo ? `Handled by IT: ${report.assignedTo}` : 'IT handler not assigned';
+      handler.textContent = report.assignedTeam
+        ? `Assigned team: ${report.assignedTeam}${report.assignedTo ? ` · Handled by ${report.assignedTo}` : ''}`
+        : report.assignedTo ? `Handled by: ${report.assignedTo}` : (report.category === 'Maintenance Records' ? 'Maintenance team not assigned' : 'IT handler not assigned');
       category.append(categorySummary, handler);
       const ticketStatus = document.createElement('span');
       ticketStatus.className = `status-badge ${statusClass(report.status)}`;
@@ -612,7 +634,7 @@
     if (status && report.status !== status) return false;
     if (severity && report.severity !== severity) return false;
     if (!query) return true;
-    return [report.department, report.category, report.incidentDate, report.location, report.personId, report.gameId, report.description, report.settlement, report.itId, report.assignedTo, report.status, report.severity]
+    return [report.department, report.category, report.incidentDate, report.location, report.personId, report.gameId, report.description, report.settlement, report.itId, report.assignedTeam, report.assignedTo, report.status, report.severity]
       .some(value => String(value || '').toLocaleLowerCase().includes(query));
   }
 
@@ -708,7 +730,7 @@
     resetForm();
     $('#formTitle').textContent = 'Edit report';
     $('#editingId').value = report.id;
-    for (const key of ['category', 'department', 'incidentDate', 'startTime', 'endTime', 'lostTime', 'location', 'personId', 'gameId', 'description', 'settlement', 'itId', 'status', 'severity', 'assignedTo']) {
+    for (const key of ['category', 'department', 'assignedTeam', 'incidentDate', 'startTime', 'endTime', 'lostTime', 'location', 'personId', 'gameId', 'description', 'settlement', 'itId', 'status', 'severity', 'assignedTo']) {
       $(`#${key}`).value = report[key] || (key === 'status' ? 'New' : '');
     }
     currentPhotos = report.photos.map(photo => ({ ...photo }));
@@ -737,6 +759,7 @@
       itId: $('#itId').value,
       status: $('#status').value,
       severity: $('#severity').value,
+      assignedTeam: $('#assignedTeam').value,
       assignedTo: $('#assignedTo').value.trim().slice(0, 100),
       ticketNotes: existing?.ticketNotes || '',
       photos: currentPhotos,
@@ -771,7 +794,7 @@
     const columns = [
       ['Ticket ID', 'ticketId'], ['Incident Date', 'incidentDate'], ['ID Number', 'personId'], ['Department', 'department'], ['Incident Type', 'category'], ['Urgency', 'severity'], ['Start Time', 'startTime'], ['End Time', 'endTime'],
       ['Lost Time', 'lostTime'], ['Location / Table No.', 'location'], ['What are you reporting?', 'description'],
-      ['Settlement', 'settlement'], ['Game ID', 'gameId'], ['IT ID', 'itId'], ['Status / progress', 'status'], ['Handled by (IT)', 'assignedTo'], ['Ticket Notes', 'ticketNotes']
+      ['Settlement', 'settlement'], ['Game ID', 'gameId'], ['IT ID', 'itId'], ['Status / progress', 'status'], ['Assigned team', 'assignedTeam'], ['Handled by', 'assignedTo'], ['Ticket Notes', 'ticketNotes']
     ];
     const rows = [columns.map(([label]) => csvCell(label)).join(',')];
     for (const report of reports) rows.push(columns.map(([, key]) => csvCell(report[key])).join(','));
@@ -915,7 +938,13 @@
   $('#saveTicket').addEventListener('click', async () => {
     const report = reports.find(item => item.id === activeTicketId);
     if (!report) return;
+    if (report.category === 'Maintenance Records' && !$('#ticketAssignedTeam').value) {
+      showToast('Choose IT or Maintenance for this maintenance ticket.');
+      $('#ticketAssignedTeam').focus();
+      return;
+    }
     report.status = $('#ticketDetailStatus').value;
+    report.assignedTeam = report.category === 'Maintenance Records' ? $('#ticketAssignedTeam').value : '';
     report.assignedTo = $('#ticketAssignee').value.trim().slice(0, 100);
     report.ticketNotes = $('#ticketNotes').value.trim().slice(0, 2000);
     report.updatedAt = new Date().toISOString();
@@ -937,6 +966,12 @@
       error.textContent = 'Complete the incident type, incident date, and incident description.';
       error.hidden = false;
       invalid.focus();
+      return;
+    }
+    if ($('#category').value === 'Maintenance Records' && !$('#assignedTeam').value) {
+      error.textContent = 'Choose IT or Maintenance to handle this maintenance report.';
+      error.hidden = false;
+      $('#assignedTeam').focus();
       return;
     }
     if (pendingPhotoUploads > 0) {

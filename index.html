@@ -6,10 +6,10 @@
     <meta name="theme-color" content="#f5f7f6" />
     <meta name="description" content="A free incident report log with an optional shared dashboard." />
     <title>Incident Desk | Incident report</title>
-    <link rel="stylesheet" href="styles.css?v=20261101-2" />
+    <link rel="stylesheet" href="styles.css?v=20261101-3" />
     <script src="config.js?v=20261101-1"></script>
     <script src="sync.js?v=20261101-1" defer></script>
-    <script src="app.js?v=20261101-2" defer></script>
+    <script src="app.js?v=20261101-3" defer></script>
   </head>
   <body>
     <div class="app-shell">
@@ -161,10 +161,11 @@
         <input id="editingId" type="hidden" />
         <div class="form-grid">
           <label class="form-field" for="category"><span>Incident type <i>*</i></span><select id="category" name="category" required></select><small>From the Book1 incident template.</small></label>
-          <label class="form-field" for="department"><span>Department</span><select id="department" name="department"><option value="">Select a department</option><option value="CCTV">CCTV</option><option value="HR">HR</option><option value="ADMIN">ADMIN</option><option value="STUDIO">STUDIO</option><option value="CARD">CARD</option></select></label>
+          <label class="form-field" for="department"><span>Department</span><select id="department" name="department"><option value="">Select a department</option><option value="CCTV">CCTV</option><option value="HR">HR</option><option value="ADMIN">ADMIN</option><option value="STUDIO">STUDIO</option><option value="CARD">CARD</option><option value="MAINTENANCE">Maintenance</option></select></label>
+          <label class="form-field hidden" id="assignedTeamField" for="assignedTeam"><span>Assigned team <i>*</i></span><select id="assignedTeam" name="assignedTeam"><option value="">Choose IT or Maintenance</option><option value="IT">IT</option><option value="Maintenance">Maintenance</option></select><small>Choose which team should handle this maintenance report.</small></label>
           <label class="form-field" for="incidentDate"><span>Incident date <i>*</i></span><input id="incidentDate" name="incidentDate" type="date" required /></label>
           <label class="form-field" for="status"><span>Status / progress</span><select id="status" name="status"><option value="New">New</option><option value="Ongoing">Ongoing</option><option value="In Progress">In Progress</option><option value="Resolved">Resolved</option><option value="Closed">Closed</option></select></label>
-          <label class="form-field" for="assignedTo"><span>Handled by (IT)</span><input id="assignedTo" name="assignedTo" type="text" maxlength="100" placeholder="Name of IT staff member" /></label>
+          <label class="form-field" for="assignedTo"><span>Handled by</span><input id="assignedTo" name="assignedTo" type="text" maxlength="100" placeholder="Name of IT or maintenance staff member" /></label>
           <label class="form-field" for="severity"><span>Urgency</span><select id="severity" name="severity"><option value="Low">Low</option><option value="Medium" selected>Medium</option><option value="High">High</option><option value="Critical">Critical</option></select></label>
           <label class="form-field" for="startTime"><span>Start time</span><input id="startTime" name="startTime" type="time" /></label>
           <label class="form-field" for="endTime"><span>End time</span><input id="endTime" name="endTime" type="time" /></label>
@@ -201,7 +202,8 @@
         <div class="ticket-photo-gallery" id="ticketPhotoGallery"></div>
         <div class="ticket-edit-grid">
           <label class="form-field" for="ticketDetailStatus"><span>Status / progress</span><select id="ticketDetailStatus"><option value="New">New</option><option value="Ongoing">Ongoing</option><option value="In Progress">In Progress</option><option value="Resolved">Resolved</option><option value="Closed">Closed</option></select></label>
-          <label class="form-field" for="ticketAssignee"><span>Handled by (IT)</span><input id="ticketAssignee" type="text" maxlength="100" placeholder="Name of IT staff member" /></label>
+          <label class="form-field hidden" id="ticketAssignedTeamField" for="ticketAssignedTeam"><span>Assigned team <i>*</i></span><select id="ticketAssignedTeam"><option value="">Choose IT or Maintenance</option><option value="IT">IT</option><option value="Maintenance">Maintenance</option></select></label>
+          <label class="form-field" for="ticketAssignee"><span>Handled by</span><input id="ticketAssignee" type="text" maxlength="100" placeholder="Name of IT or maintenance staff member" /></label>
           <label class="form-field field-full" for="ticketNotes"><span>Ticket notes / updates</span><textarea id="ticketNotes" rows="3" maxlength="2000" placeholder="Add follow-up notes or work updates"></textarea></label>
         </div>
         <div class="ticket-dialog-actions"><button class="button button-quiet" id="editSourceIncident" type="button">Edit incident details</button><button class="button button-primary" id="saveTicket" type="button">Save ticket updates</button></div>
