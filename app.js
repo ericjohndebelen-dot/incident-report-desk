@@ -97,7 +97,7 @@
       itId: String(value.itId || '').trim().slice(0, 80),
       status,
       severity,
-      assignedTeam: value.category === 'Maintenance Records' && ASSIGNED_TEAMS.includes(value.assignedTeam) ? value.assignedTeam : '',
+      assignedTeam: ASSIGNED_TEAMS.includes(value.assignedTeam) ? value.assignedTeam : '',
       assignedTo: String(value.assignedTo || '').trim().slice(0, 100),
       ticketNotes: String(value.ticketNotes || '').trim().slice(0, 2000),
       photos: Array.isArray(value.photos) ? value.photos
@@ -394,12 +394,8 @@
       : category === 'Office Incident' ? 'HR-ID (E-ID#)' : 'ID (E-ID#)';
     $('#descriptionLabel').innerHTML = `${['Studio Incident', 'Card Room Incident', 'Office Incident'].includes(category) ? 'Error description' : 'Incident description'} <i>*</i>`;
     $('#gameIdField').classList.toggle('hidden', category !== 'Studio Incident');
-    const assignedTeamField = $('#assignedTeamField');
-    const assignedTeamSelect = $('#assignedTeam');
-    const needsTeam = category === 'Maintenance Records';
-    assignedTeamField.classList.toggle('hidden', !needsTeam);
-    assignedTeamSelect.required = needsTeam;
-    if (!needsTeam) assignedTeamSelect.value = '';
+    $('#assignedTeamField').classList.remove('hidden');
+    $('#assignedTeam').required = true;
   }
 
   function createMeta(icon, text) {
@@ -534,7 +530,7 @@
     addTicketDetail(details, 'ID number', report.personId);
     addTicketDetail(details, 'Game ID', report.gameId);
     addTicketDetail(details, 'IT ID', report.itId);
-    if (report.category === 'Maintenance Records') addTicketDetail(details, 'Assigned team', report.assignedTeam);
+    addTicketDetail(details, 'Assigned team', report.assignedTeam);
     addTicketDetail(details, 'Handled by', report.assignedTo);
     addTicketDetail(details, 'Incident description', report.description, true);
     addTicketDetail(details, 'Settlement / action taken', report.settlement, true);
@@ -558,12 +554,9 @@
     $('#ticketDetailStatus').value = report.status;
     $('#ticketAssignee').value = report.assignedTo || '';
     $('#ticketNotes').value = report.ticketNotes || '';
-    const assignedTeamField = $('#ticketAssignedTeamField');
-    const assignedTeamSelect = $('#ticketAssignedTeam');
-    const needsTeam = report.category === 'Maintenance Records';
-    assignedTeamField.classList.toggle('hidden', !needsTeam);
-    assignedTeamSelect.required = needsTeam;
-    assignedTeamSelect.value = report.assignedTeam || '';
+    $('#ticketAssignedTeamField').classList.remove('hidden');
+    $('#ticketAssignedTeam').required = true;
+    $('#ticketAssignedTeam').value = report.assignedTeam || '';
   }
 
   function openTicket(report) {
@@ -610,9 +603,7 @@
       categorySummary.textContent = `${displayDepartment(report.department) || 'No department'} · ${report.category} · ${report.severity}`;
       const handler = document.createElement('span');
       handler.className = 'ticket-handler';
-      handler.textContent = report.assignedTeam
-        ? `Assigned team: ${report.assignedTeam}${report.assignedTo ? ` · Handled by ${report.assignedTo}` : ''}`
-        : report.assignedTo ? `Handled by: ${report.assignedTo}` : (report.category === 'Maintenance Records' ? 'Maintenance team not assigned' : 'IT handler not assigned');
+      handler.textContent = `${report.assignedTeam ? `Assigned team: ${report.assignedTeam}` : 'Team not assigned'}${report.assignedTo ? ` · Handled by ${report.assignedTo}` : ''}`;
       category.append(categorySummary, handler);
       const ticketStatus = document.createElement('span');
       ticketStatus.className = `status-badge ${statusClass(report.status)}`;
@@ -938,13 +929,13 @@
   $('#saveTicket').addEventListener('click', async () => {
     const report = reports.find(item => item.id === activeTicketId);
     if (!report) return;
-    if (report.category === 'Maintenance Records' && !$('#ticketAssignedTeam').value) {
-      showToast('Choose IT or Maintenance for this maintenance ticket.');
+    if (!$('#ticketAssignedTeam').value) {
+      showToast('Choose IT or Maintenance for this ticket.');
       $('#ticketAssignedTeam').focus();
       return;
     }
     report.status = $('#ticketDetailStatus').value;
-    report.assignedTeam = report.category === 'Maintenance Records' ? $('#ticketAssignedTeam').value : '';
+    report.assignedTeam = $('#ticketAssignedTeam').value;
     report.assignedTo = $('#ticketAssignee').value.trim().slice(0, 100);
     report.ticketNotes = $('#ticketNotes').value.trim().slice(0, 2000);
     report.updatedAt = new Date().toISOString();
@@ -968,8 +959,8 @@
       invalid.focus();
       return;
     }
-    if ($('#category').value === 'Maintenance Records' && !$('#assignedTeam').value) {
-      error.textContent = 'Choose IT or Maintenance to handle this maintenance report.';
+    if (!$('#assignedTeam').value) {
+      error.textContent = 'Choose IT or Maintenance to handle this report.';
       error.hidden = false;
       $('#assignedTeam').focus();
       return;

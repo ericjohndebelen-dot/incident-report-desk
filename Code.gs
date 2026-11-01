@@ -153,7 +153,9 @@ function normalizeIncident(value, isPublic) {
   const category = REPORT_CATEGORIES.includes(value.category) ? value.category : categoryByDepartment[department];
   const date = String(value.incidentDate || '').slice(0, 10);
   const description = cleanText(value.description, 3000);
+  const assignedTeam = ASSIGNED_TEAMS.includes(value.assignedTeam) ? value.assignedTeam : '';
   if (!category || !/^\d{4}-\d{2}-\d{2}$/.test(date) || !description) throw new Error('Complete the date, department, and incident description.');
+  if (isPublic && !assignedTeam) throw new Error('Choose IT or Maintenance to handle this report.');
   const photos = Array.isArray(value.photos) ? value.photos.slice(0, 3).map(photo => ({
     name: cleanText(photo && photo.name || 'Incident photo', 100) || 'Incident photo',
     dataUrl: String(photo && photo.dataUrl || ''),
@@ -176,7 +178,7 @@ function normalizeIncident(value, isPublic) {
     itId: cleanText(value.itId, 80),
     status: REPORT_STATUSES.includes(value.status) ? value.status : 'New',
     severity: REPORT_URGENCIES.includes(value.severity) ? value.severity : 'Medium',
-    assignedTeam: category === 'Maintenance Records' && ASSIGNED_TEAMS.includes(value.assignedTeam) ? value.assignedTeam : '',
+    assignedTeam,
     assignedTo: isPublic ? '' : cleanText(value.assignedTo, 100),
     ticketNotes: isPublic ? '' : cleanText(value.ticketNotes, 2000),
     photos,

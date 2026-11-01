@@ -64,12 +64,8 @@
     const isTableDepartment = ['STUDIO', 'CARD'].includes(department);
     $('#publicLocationLabel').textContent = isTableDepartment ? 'Table No.' : 'Location';
     $('#publicGameIdField').classList.toggle('hidden', department !== 'STUDIO');
-    const teamField = $('#publicAssignedTeamField');
-    const teamSelect = $('#publicAssignedTeam');
-    const needsTeam = department === 'MAINTENANCE';
-    teamField.classList.toggle('hidden', !needsTeam);
-    teamSelect.required = needsTeam;
-    if (!needsTeam) teamSelect.value = '';
+    $('#publicAssignedTeamField').classList.remove('hidden');
+    $('#publicAssignedTeam').required = true;
   }
 
   function updateStorageNote() {
@@ -220,18 +216,12 @@
 
   form.addEventListener('submit', async event => {
     event.preventDefault();
-    const required = [$('#publicDate'), $('#publicPersonId'), $('#publicDepartment'), $('#publicSeverity'), $('#publicDescription')];
+    const required = [$('#publicDate'), $('#publicPersonId'), $('#publicDepartment'), $('#publicSeverity'), $('#publicAssignedTeam'), $('#publicDescription')];
     const invalid = required.find(field => !field.value.trim());
     if (invalid) {
-      errorBox.textContent = 'Complete the date, ID number, department, urgency, and incident description.';
+      errorBox.textContent = 'Complete the date, ID number, department, urgency, assigned team, and incident description.';
       errorBox.hidden = false;
       invalid.focus();
-      return;
-    }
-    if ($('#publicDepartment').value === 'MAINTENANCE' && !$('#publicAssignedTeam').value) {
-      errorBox.textContent = 'Choose IT or Maintenance to handle this maintenance report.';
-      errorBox.hidden = false;
-      $('#publicAssignedTeam').focus();
       return;
     }
     if (pendingUploads > 0) {
@@ -258,7 +248,7 @@
         itId: $('#publicItId').value.trim(),
         status: 'New',
         severity: $('#publicSeverity').value,
-        assignedTeam: $('#publicDepartment').value === 'MAINTENANCE' ? $('#publicAssignedTeam').value : '',
+        assignedTeam: $('#publicAssignedTeam').value,
         assignedTo: '',
         ticketNotes: '',
         photos: photos.slice(0, MAX_PHOTOS),
@@ -266,7 +256,7 @@
         updatedAt: now
       };
     }
-    if (pendingReport.category === 'Maintenance Records') pendingReport.assignedTeam = $('#publicAssignedTeam').value;
+    pendingReport.assignedTeam = $('#publicAssignedTeam').value;
     const submitButton = form.querySelector('[type="submit"]');
     submitButton.disabled = true;
     submitButton.querySelector('svg')?.classList.add('sync-spin');

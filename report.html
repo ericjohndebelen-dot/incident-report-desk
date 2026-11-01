@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="styles.css?v=20261101-3" />
     <script src="config.js?v=20261101-1"></script>
     <script src="sync.js?v=20261101-1" defer></script>
-    <script src="report.js?v=20261101-3" defer></script>
+    <script src="report.js?v=20261101-4" defer></script>
   </head>
   <body class="public-report-page">
     <header class="public-header">
@@ -40,7 +40,7 @@
           <label class="form-field" for="publicDepartment"><span>Department <i>*</i></span><select id="publicDepartment" required>
             <option value="CCTV">CCTV</option><option value="HR">HR</option><option value="ADMIN">ADMIN</option><option value="STUDIO">STUDIO</option><option value="CARD">CARD</option><option value="MAINTENANCE">Maintenance</option>
           </select></label>
-          <label class="form-field hidden" id="publicAssignedTeamField" for="publicAssignedTeam"><span>Assigned team <i>*</i></span><select id="publicAssignedTeam"><option value="">Choose IT or Maintenance</option><option value="IT">IT</option><option value="Maintenance">Maintenance</option></select><small>Choose which team should handle this maintenance report.</small></label>
+          <label class="form-field" id="publicAssignedTeamField" for="publicAssignedTeam"><span>Who should handle this report? <i>*</i></span><select id="publicAssignedTeam" required><option value="">Choose IT or Maintenance</option><option value="IT">IT</option><option value="Maintenance">Maintenance</option></select></label>
           <label class="form-field" for="publicSeverity"><span>Urgency <i>*</i></span><select id="publicSeverity" required><option>Low</option><option selected>Medium</option><option>High</option><option>Critical</option></select></label>
           <label class="form-field field-full" for="publicDescription"><span>What are you reporting? <i>*</i></span><textarea id="publicDescription" rows="5" maxlength="3000" required placeholder="Describe what happened and where it happened."></textarea></label>
         </div>
