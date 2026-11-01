@@ -1,5 +1,4 @@
-// Add your deployed Google Apps Script web app URL here to enable shared reports.
-// Example: https://script.google.com/macros/s/AKfycb.../exec
+// Public Apps Script endpoint for shared incident reports.
 window.INCIDENT_DESK_CONFIG = {
-  apiUrl: ''
+  apiUrl: 'https://script.google.com/macros/s/AKfycbyi7ouXGMkSe3MuRfg6kUwvGqoRBuRgeJAVipPQvkU4Tsw7MLmIMu9XCOgDuUHOA4U_Eg/exec'
 };
